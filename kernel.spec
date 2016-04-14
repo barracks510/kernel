@@ -11,12 +11,10 @@ Summary: The Linux kernel
 # Sign modules on x86.  Make sure the config files match this setting if more
 # architectures are added.
 %ifarch %{ix86} x86_64
-%global signkernel 1
 %global signmodules 1
 %global zipmodules 1
 %else
-%global signkernel 0
-%global signmodules 1
+%global signmodules 0
 %global zipmodules 0
 %endif
 
@@ -42,7 +40,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 300
+%global baserelease 900
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +52,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -125,7 +123,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # Want to build a vanilla kernel build without any non-upstream patches?
 %define with_vanilla %{?_with_vanilla: 1} %{?!_with_vanilla: 0}
@@ -495,6 +493,12 @@ Source5005: kbuild-AFTER_LINK.patch
 
 # Git trees.
 
+# Microsoft Surface
+Patch9996: HID-multitouch-Ignore-invalid-reports.patch
+Patch9997: HID-multitouch-Add-MT_QUIRK_NOT_SEEN_MEANS_UP-to-MT_.patch
+Patch9998: Add-multitouch-support-for-Microsoft-Type-Cover-3.patch
+Patch9999: Microsoft-Surface-Pro-4-Surface-Book-camera-support.patch
+
 # Standalone patches
 Patch420: arm64-avoid-needing-console-to-enable-serial-console.patch
 
@@ -615,6 +619,9 @@ Patch508: kexec-uefi-copy-secure_boot-flag-in-boot-params.patch
 
 #rhbz 1286293
 Patch571: ideapad-laptop-Add-Lenovo-ideapad-Y700-17ISK-to-no_h.patch
+
+#CVE-2015-8709 rhbz 1295287 1295288
+Patch603: ptrace-being-capable-wrt-a-process-requires-mapped-u.patch
 
 #rhbz 1295646
 Patch621: drm-udl-Use-unlocked-gem-unreferencing.patch
@@ -1176,8 +1183,8 @@ if [ ! -d kernel-%{kversion}%{?dist}/vanilla-%{vanillaversion} ]; then
 %endif
 %endif
     git init
-    git config user.email "kernel-team@fedoraproject.org"
-    git config user.name "Fedora Kernel Team"
+    git config user.email "barracks510@gmail.com"
+    git config user.name "Dennis Chen"
     git config gc.auto 0
     git add .
     git commit -a -q -m "baseline"
@@ -1201,8 +1208,8 @@ cp -al vanilla-%{vanillaversion} linux-%{KVERREL}
 cd linux-%{KVERREL}
 if [ ! -d .git ]; then
     git init
-    git config user.email "kernel-team@fedoraproject.org"
-    git config user.name "Fedora Kernel Team"
+    git config user.email "barracks510@gmail.com"
+    git config user.name "Dennis Chen"
     git config gc.auto 0
     git add .
     git commit -a -q -m "baseline"
@@ -3002,6 +3009,9 @@ fi
 
 * Fri Jul 17 2015 Peter Robinson <pbrobinson@fedoraproject.org>
 - Enable DW MMC for generic ARM (hi6220 SoC support)
+
+* Thu Jul 16 2015 Donavan Lance <tusklahoma@gmail.com> - 4.2.0-0.rc2.git1.990.surfacepro3
+- Linux v4.2-rc2-77-gf760b87f8f12-990.surfacepro3
 
 * Wed Jul 15 2015 Josh Boyer <jwboyer@fedoraproject.org> - 4.2.0-0.rc2.git1.1
 - Linux v4.2-rc2-77-gf760b87f8f12
